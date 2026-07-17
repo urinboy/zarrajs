@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>Zarra — brauzer testlari (render qatlami)</title>
+<style>
+  body { font-family: ui-monospace, monospace; padding: 24px; background: #0c1220; color: #d7deea; }
+  h1 { font-size: 18px; }
+  .otdi { color: #7fe0b0; }
+  .yiqildi { color: #ff8f8f; white-space: pre-wrap; }
+  #xulosa { font-weight: bold; margin-top: 16px; font-size: 16px; }
+  #sahna { position: absolute; left: -9999px; }
+</style>
+</head>
+<body>
+<h1>Zarra — render qatlami testlari</h1>
+<div id="natijalar"></div>
+<div id="xulosa">Ishlamoqda...</div>
+<div id="sahna"></div>
+
+<script type="module">
+import { zarra, html, signal, computed, effect, router, store } from '../src/zarra.js';
+
+const natijalar = document.getElementById('natijalar');
+const sahna = document.getElementById('sahna');
+const kut = () => new Promise((r) => setTimeout(r, 0));
+const xatolar = [];
+let otdi = 0;
+
+function teng(haqiqiy, kutilgan, izoh = '') {
+  const h = JSON.stringify(haqiqiy);
+  const k = JSON.stringify(kutilgan);
+  if (h !== k) throw new Error(`${izoh} — kutilgan: ${k}, haqiqiy: ${h}`);
+}
+function rost(q, izoh = 'rost emas') { if (!q) throw new Error(izoh); }
+
+/** Har bir test toza konteyner oladi; tugagach konteyner o'chiriladi. */
+async function test(nom, fn) {
+  const q = document.createElement('div');
+  sahna.appendChild(q);
+  try {
+    await fn(q);
+    natijalar.insertAdjacentHTML('beforeend', `<div class="otdi">✓ ${nom}</div>`);
+    otdi++;
+  } catch (x) {
+    natijalar.insertAdjacentHTML('beforeend', `<div class="yiqildi">✗ ${nom}\n  ${x.message}</div>`);
+    xatolar.push(`${nom}: ${x.message}`);
+    console.error(nom, x);
+  }
+  q.remove();
+}
+
+/* ---------------- TESTLAR ---------------- */
+
+await test('oddiy matn va raqam render qilinadi', async (q) => {
+  zarra(q, () => html`<p>Salom, ${'dunyo'}! Son: ${42}</p>`);
+  teng(q.querySelector('p').textContent, 'Salom, dunyo! Son: 42');
+});
+
+await test('XSS: qiymatdagi HTML matn sifatida qoladi (innerHTML emas)', async (q) => {
+  const yovuz = '<img src=x onerror="window.__xss=1"><b>qalin</b>';
+  zarra(q, () => html`<p>${yovuz}</p>`);
+  teng(q.querySelector('p').textContent, yovuz, 'matn aynan saqlanishi kerak');
+  teng(q.querySelectorAll('img').length, 0, 'img element yaralmasligi kerak');
+  teng(q.querySelectorAll('b').length, 0, 'b element yaralmasligi kerak');
+});
+
+await test('XSS: atribut qiymatida ham xavfsiz', async (q) => {
+  const yovuz = '"><script>window.__xss2=1<\/script>';
+  zarra(q, () => html`<p title=${yovuz}>x</p>`);
+  teng(q.querySelector('p').getAttribute('title'), yovuz);
+  teng(q.querySelectorAll('script').length, 0);
+});
+
+await test("oson uslub: \${son()} — signal o'zgarsa DOM yangilanadi", async (q) => {
+  const son = signal(0);
+  zarra(q, () => html`<h1>${son()}</h1>`);
+  teng(q.querySelector('h1').textContent, '0');
+  son(7);
+  await kut();
+  teng(q.querySelector('h1').textContent, '7');
+});
+
+await test('oson uslub: shablon bir xil bo\'lsa DOM tuguni almashtirilmaydi (qiymat diff)', async (q) => {
+  const son = signal(0);
+  zarra(q, () => html`<h1>${son()}</h1>`);
+  const h1 = q.querySelector('h1');
+  son(1);
+  await kut();
+  rost(q.querySelector('h1') === h1, "h1 o'sha tugun bo'lib qolishi kerak");
+});
+
+await test('fine-grained: ${signal} — komponent bir marta chaqiriladi', async (q) => {
+  const son = signal(0);
+  let chaqiruvlar = 0;
+  zarra(q, () => {
+    chaqiruvlar++;
+    return html`<h1>${son}</h1>`;
+  });
+  son(1);
+  son(2);
+  await kut();
+  teng(q.querySelector('h1').textContent, '2');
+  teng(chaqiruvlar, 1, 'komponent qayta chaqirilmasligi kerak');
+});
+
+await test('fine-grained: ${() => ...} ifoda ham jonli', async (q) => {
+  const son = signal(2);
+  zarra(q, () => html`<p>${() => son() * 10}</p>`);
+  son(5);
+  await kut();
+  teng(q.querySelector('p').textContent, '50');
+});
+
+await test('computed shablon ichida', async (q) => {
+  const son = signal(3);
+  const kvadrat = computed(() => son() * son());
+  zarra(q, () => html`<p>${kvadrat}</p>`);
+  teng(q.querySelector('p').textContent, '9');
+  son(4);
+  await kut();
+  teng(q.querySelector('p').textContent, '16');
+});
+
+await test('@click hodisasi ishlaydi', async (q) => {
+  const son = signal(0);
+  zarra(q, () => html`<button @click=${() => son(son() + 1)}>${son}</button>`);
+  q.querySelector('button').click();
+  q.querySelector('button').click();
+  await kut();
+  teng(q.querySelector('button').textContent, '2');
+});
+
+await test('@model: text input ikki tomonlama', async (q) => {
+  const ism = signal('ali');
+  zarra(q, () => html`<input @model=${ism}><p>${ism}</p>`);
+  const input = q.querySelector('input');
+  teng(input.value, 'ali', 'signal → input');
+  input.value = 'vali';
+  input.dispatchEvent(new Event('input'));
+  await kut();
+  teng(ism(), 'vali', 'input → signal');
+  teng(q.querySelector('p').textContent, 'vali');
+  ism('olim');
+  await kut();
+  teng(input.value, 'olim', "signal o'zgarsa input yangilanadi");
+});
+
+await test('@model: checkbox', async (q) => {
+  const belgilangan = signal(false);
+  zarra(q, () => html`<input type="checkbox" @model=${belgilangan}>`);
+  const input = q.querySelector('input');
+  teng(input.checked, false);
+  input.checked = true;
+  input.dispatchEvent(new Event('change'));
+  teng(belgilangan(), true);
+  belgilangan(false);
+  await kut();
+  teng(input.checked, false);
+});
+
+await test('@model: type=number songa aylantiradi', async (q) => {
+  const son = signal(5);
+  zarra(q, () => html`<input type="number" @model=${son}>`);
+  const input = q.querySelector('input');
+  input.value = '12';
+  input.dispatchEvent(new Event('input'));
+  teng(son(), 12);
+  rost(typeof son() === 'number', 'qiymat number bo\'lishi kerak');
+});
+
+await test('@if: signal bilan element chiqadi/yashirinadi', async (q) => {
+  const ochiq = signal(true);
+  zarra(q, () => html`<div><p @if=${ochiq}>sir</p></div>`);
+  teng(q.querySelectorAll('p').length, 1);
+  ochiq(false);
+  await kut();
+  teng(q.querySelectorAll('p').length, 0, 'element DOM\'dan chiqishi kerak');
+  ochiq(true);
+  await kut();
+  teng(q.querySelectorAll('p').length, 1, 'element qaytishi kerak');
+  teng(q.querySelector('p').textContent, 'sir');
+});
+
+await test('atribut: false/null → olib tashlanadi, true → bo\'sh atribut', async (q) => {
+  const band = signal(false);
+  zarra(q, () => html`<button disabled=${band}>x</button>`);
+  const tugma = q.querySelector('button');
+  rost(!tugma.hasAttribute('disabled'), 'false → atribut yo\'q');
+  band(true);
+  await kut();
+  rost(tugma.hasAttribute('disabled'), 'true → atribut bor');
+});
+
+await test('atribut: aralash statik + dinamik qiymat', async (q) => {
+  const rang = signal('qizil');
+  zarra(q, () => html`<p class="katta ${rang} chiroyli">x</p>`);
+  teng(q.querySelector('p').className, 'katta qizil chiroyli');
+  rang('kok');
+  await kut();
+  teng(q.querySelector('p').className, 'katta kok chiroyli');
+});
+
+await test('ichma-ich shablon (komponent funksiya)', async (q) => {
+  const Salom = ({ ism }) => html`<b>Salom, ${ism}!</b>`;
+  zarra(q, () => html`<div>${Salom({ ism: 'Zarra' })}</div>`);
+  teng(q.querySelector('b').textContent, 'Salom, Zarra!');
+});
+
+await test('ternary: shablonlar almashadi', async (q) => {
+  const bayroq = signal(true);
+  zarra(q, () => html`<div>${() => (bayroq() ? html`<b>ha</b>` : html`<i>yo'q</i>`)}</div>`);
+  teng(q.querySelector('div').innerHTML.includes('<b>'), true);
+  bayroq(false);
+  await kut();
+  teng(q.querySelectorAll('b').length, 0);
+  teng(q.querySelector('i').textContent, "yo'q");
+});
+
+await test("ro'yxat: kalitsiz (indeks bo'yicha) render va yangilash", async (q) => {
+  const sonlar = signal([1, 2, 3]);
+  zarra(q, () => html`<ul>${() => sonlar().map((s) => html`<li>${s}</li>`)}</ul>`);
+  teng([...q.querySelectorAll('li')].map((li) => li.textContent), ['1', '2', '3']);
+  sonlar([1, 2, 3, 4]);
+  await kut();
+  teng([...q.querySelectorAll('li')].map((li) => li.textContent), ['1', '2', '3', '4']);
+  sonlar([9]);
+  await kut();
+  teng([...q.querySelectorAll('li')].map((li) => li.textContent), ['9']);
+});
+
+await test("ro'yxat: key bilan qayta tartiblashda DOM tugunlari qayta ishlatiladi", async (q) => {
+  const narsalar = signal([
+    { id: 'a', nom: 'olma' },
+    { id: 'b', nom: 'anor' },
+    { id: 'c', nom: 'uzum' },
+  ]);
+  zarra(q, () => html`<ul>${() => narsalar().map((n) => html`<li key=${n.id}>${n.nom}</li>`)}</ul>`);
+  const [liA, liB, liC] = q.querySelectorAll('li');
+  // teskari tartib
+  narsalar([...narsalar()].reverse());
+  await kut();
+  const yangi = [...q.querySelectorAll('li')];
+  teng(yangi.map((li) => li.textContent), ['uzum', 'anor', 'olma']);
+  rost(yangi[0] === liC && yangi[1] === liB && yangi[2] === liA, 'tugunlar KO\'CHIRILISHI kerak, qayta yaralmasligi');
+  rost(!q.querySelector('li').hasAttribute('key'), 'key atributi DOM\'ga yozilmasligi kerak');
+});
+
+await test("ro'yxat: element o'chirilganda uning effect'lari ham o'chadi (xotira oqmaydi)", async (q) => {
+  const element = signal({ id: 1, sarlavha: signal('birinchi') });
+  const royxat = signal([element()]);
+  let ishlagan = 0;
+  const Qator = (n) => html`<li key=${n.id}>${() => { ishlagan++; return n.sarlavha(); }}</li>`;
+  zarra(q, () => html`<ul>${() => royxat().map(Qator)}</ul>`);
+  teng(ishlagan, 1);
+  royxat([]); // element o'chirildi
+  await kut();
+  element().sarlavha('yangi'); // o'chirilgan element signali o'zgardi
+  await kut();
+  teng(ishlagan, 1, "o'chirilgan element effect'i ishlamasligi kerak");
+});
+
+await test('zarra() dispose: DOM tozalanadi va yangilanish to\'xtaydi', async (q) => {
+  const son = signal(0);
+  const ochir = zarra(q, () => html`<p>${son}</p>`);
+  teng(q.querySelector('p').textContent, '0');
+  ochir();
+  teng(q.innerHTML, '', 'DOM tozalanishi kerak');
+  son(5);
+  await kut();
+  teng(q.innerHTML, '', "dispose'dan keyin render bo'lmasligi kerak");
+});
+
+await test('router: hash almashganda sahifa almashadi', async (q) => {
+  location.hash = '';
+  await kut();
+  const ochir = zarra(q, router({
+    '/': () => html`<h2>bosh</h2>`,
+    '/haqida/:id': (p) => html`<h2>haqida-${p.id}</h2>`,
+    '*': () => html`<h2>404</h2>`,
+  }));
+  teng(q.querySelector('h2').textContent, 'bosh');
+  location.hash = '#/haqida/9';
+  await kut();
+  await kut();
+  teng(q.querySelector('h2').textContent, 'haqida-9');
+  location.hash = '#/mavjud-emas';
+  await kut();
+  await kut();
+  teng(q.querySelector('h2').textContent, '404');
+  ochir();
+  location.hash = '';
+});
+
+await test('store: shablonda ishlaydi', async (q) => {
+  const doken = store({ son: 1, qoshish() { this.son++; } });
+  zarra(q, () => html`<button @click=${() => doken.qoshish()}>${() => doken.son}</button>`);
+  teng(q.querySelector('button').textContent, '1');
+  q.querySelector('button').click();
+  await kut();
+  teng(q.querySelector('button').textContent, '2');
+});
+
+await test("bo'sh qiymatlar: null/undefined/false/true — hech narsa chiqarmaydi", async (q) => {
+  zarra(q, () => html`<p>${null}${undefined}${false}${true}${''}</p>`);
+  teng(q.querySelector('p').textContent, '');
+});
+
+await test('matn ↔ shablon ↔ ro\'yxat almashinuvi buzilmaydi', async (q) => {
+  const rejim = signal('matn');
+  zarra(q, () => html`<div>${() => {
+    const r = rejim();
+    if (r === 'matn') return 'oddiy matn';
+    if (r === 'shablon') return html`<b>shablon</b>`;
+    return [1, 2].map((s) => html`<i>${s}</i>`);
+  }}</div>`);
+  teng(q.querySelector('div').textContent, 'oddiy matn');
+  rejim('shablon');
+  await kut();
+  teng(q.querySelector('b').textContent, 'shablon');
+  rejim('royxat');
+  await kut();
+  teng(q.querySelectorAll('i').length, 2);
+  rejim('matn');
+  await kut();
+  teng(q.querySelector('div').textContent, 'oddiy matn');
+  teng(q.querySelectorAll('i').length, 0);
+});
+
+await test('jadval ichida ro\'yxat (tr) — parser buzmaydi', async (q) => {
+  const qatorlar = signal([['a', 1], ['b', 2]]);
+  zarra(q, () => html`<table><tbody>${() => qatorlar().map(([nom, son]) => html`<tr key=${nom}><td>${nom}</td><td>${son}</td></tr>`)}</tbody></table>`);
+  teng(q.querySelectorAll('tr').length, 2);
+  teng(q.querySelector('td').textContent, 'a');
+});
+
+/* ---------------- XULOSA ---------------- */
+
+const xulosa = document.getElementById('xulosa');
+xulosa.textContent = xatolar.length
+  ? `✗ ${otdi} ta o'tdi, ${xatolar.length} ta yiqildi`
+  : `✓ Hammasi o'tdi: ${otdi} ta test`;
+xulosa.className = xatolar.length ? 'yiqildi' : 'otdi';
+window.__yakun = { otdi, yiqildi: xatolar.length, xatolar };
+</script>
+</body>
+</html>
