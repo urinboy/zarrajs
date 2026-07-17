@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zarra namunasi — Forma validatsiyasi</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #E9EDF2; color: #0C1220;
+         max-width: 440px; margin: 48px auto; padding: 0 20px; }
+  .maydon { margin-bottom: 16px; }
+  label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  input { width: 100%; box-sizing: border-box; font: inherit; padding: 10px 14px;
+          border: 1px solid #CBD4DF; border-radius: 10px; background: #F5F7FA; }
+  input.xato { border-color: #e33; }
+  .izoh { font-size: 13px; color: #e33; min-height: 18px; margin-top: 4px; }
+  button { font: inherit; padding: 12px 24px; border-radius: 999px; border: none;
+           cursor: pointer; background: #2B49FF; color: #fff; width: 100%; }
+  button:disabled { background: #9AA6B5; cursor: not-allowed; }
+  .muvaffaqiyat { background: #d6f5e3; border: 1px solid #7fe0b0; border-radius: 10px;
+                  padding: 14px; margin-top: 16px; }
+</style>
+</head>
+<body>
+<h1>Ro'yxatdan o'tish</h1>
+<div id="app"></div>
+
+<script type="module">
+// Forma validatsiyasi: @model + computed'lar — xatolar jonli hisoblanadi.
+import { zarra, html, signal, computed } from '../src/zarra.js';
+
+const ism = signal('');
+const email = signal('');
+const parol = signal('');
+const yuborildi = signal(false);
+
+// Har bir qoida — computed: qiymat o'zgarganda xato matni o'zi yangilanadi.
+const ismXato = computed(() =>
+  ism() && ism().trim().length < 3 ? "Ism kamida 3 ta harf bo'lsin" : ''
+);
+const emailXato = computed(() =>
+  email() && !/^\S+@\S+\.\S+$/.test(email()) ? "Email noto'g'ri ko'rinishda" : ''
+);
+const parolXato = computed(() =>
+  parol() && parol().length < 8 ? "Parol kamida 8 ta belgi bo'lsin" : ''
+);
+const hammasiTogri = computed(
+  () =>
+    ism().trim().length >= 3 &&
+    /^\S+@\S+\.\S+$/.test(email()) &&
+    parol().length >= 8
+);
+
+function yuborish(hodisa) {
+  hodisa.preventDefault();
+  if (hammasiTogri()) yuborildi(true);
+}
+
+// Maydon — qayta ishlatiladigan komponent: yorliq, input va xato izohi.
+const Maydon = (yorliq, tur, sig, xato) => html`
+  <div class="maydon">
+    <label>${yorliq}</label>
+    <input type=${tur} @model=${sig} class=${() => (xato() ? 'xato' : '')}>
+    <div class="izoh">${xato}</div>
+  </div>
+`;
+
+zarra('#app', () => html`
+  <form @submit=${yuborish}>
+    ${Maydon('Ism', 'text', ism, ismXato)}
+    ${Maydon('Email', 'email', email, emailXato)}
+    ${Maydon('Parol', 'password', parol, parolXato)}
+    <button disabled=${() => !hammasiTogri()}>Yuborish</button>
+    <div class="muvaffaqiyat" @if=${yuborildi}>
+      Rahmat, ${ism}! Ma'lumotlar qabul qilindi ✓
+    </div>
+  </form>
+`);
+</script>
+</body>
+</html>

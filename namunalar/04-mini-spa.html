@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zarra namunasi — Mini SPA (router + store)</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #E9EDF2; color: #0C1220;
+         max-width: 640px; margin: 0 auto; padding: 0 20px 40px; }
+  nav { display: flex; gap: 18px; align-items: center; padding: 18px 0;
+        border-bottom: 1px solid #CBD4DF; margin-bottom: 24px; }
+  nav a { color: #4A5568; text-decoration: none; font-weight: 500; }
+  nav a:hover { color: #2B49FF; }
+  nav .savat { margin-left: auto; background: #2B49FF; color: #fff;
+               border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+  .mahsulot { display: flex; justify-content: space-between; align-items: center;
+              background: #F5F7FA; border: 1px solid #CBD4DF; border-radius: 10px;
+              padding: 14px 18px; margin-bottom: 8px; }
+  .mahsulot a { color: #0C1220; font-weight: 600; text-decoration: none; }
+  button { font: inherit; padding: 8px 16px; border-radius: 8px; border: none;
+           cursor: pointer; background: #0C1220; color: #fff; }
+  button:hover { background: #2B49FF; }
+  .narx { color: #4A5568; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+// Mini do'kon SPA: router (hash marshrutlar, :id parametri) + store (global holat).
+import { zarra, html, router, store } from '../src/zarra.js';
+
+const MAHSULOTLAR = [
+  { id: 1, nom: 'Olma', narx: 12000 },
+  { id: 2, nom: 'Anor', narx: 35000 },
+  { id: 3, nom: 'Uzum', narx: 28000 },
+];
+
+// Global holat: sahifalar orasida saqlanadi (SPA'da qayta yuklanish yo'q).
+const doken = store({
+  savat: [],
+  qoshish(id) { this.savat = [...this.savat, id]; },
+  bosh() { this.savat = []; },
+});
+
+const som = (n) => n.toLocaleString('uz') + " so'm";
+
+const Sarlavha = () => html`
+  <nav>
+    <a href="#/">Bosh sahifa</a>
+    <a href="#/haqida">Haqida</a>
+    <span class="savat">Savat: ${() => doken.savat.length}</span>
+  </nav>
+`;
+
+const BoshSahifa = () => html`
+  ${Sarlavha()}
+  <h1>Mahsulotlar</h1>
+  ${MAHSULOTLAR.map((m) => html`
+    <div class="mahsulot" key=${m.id}>
+      <div>
+        <a href="#/mahsulot/${m.id}">${m.nom}</a>
+        <div class="narx">${som(m.narx)}</div>
+      </div>
+      <button @click=${() => doken.qoshish(m.id)}>Savatga</button>
+    </div>
+  `)}
+  <button @if=${() => doken.savat.length > 0} @click=${() => doken.bosh()}>
+    Savatni bo'shatish
+  </button>
+`;
+
+const Mahsulot = (params) => {
+  const m = MAHSULOTLAR.find((x) => x.id === Number(params.id));
+  if (!m) return html`${Sarlavha()}<h1>Mahsulot topilmadi</h1>`;
+  return html`
+    ${Sarlavha()}
+    <h1>${m.nom}</h1>
+    <p class="narx">Narxi: ${som(m.narx)}</p>
+    <button @click=${() => doken.qoshish(m.id)}>Savatga qo'shish</button>
+    <p><a href="#/">← Orqaga</a></p>
+  `;
+};
+
+const Haqida = () => html`
+  ${Sarlavha()}
+  <h1>Haqida</h1>
+  <p>Bu mini SPA — Zarra'ning router va store imkoniyatlarini ko'rsatadi.
+     Sahifalar orasida o'tishda savat yo'qolmaydi, chunki holat global store'da.</p>
+`;
+
+zarra('#app', router({
+  '/': BoshSahifa,
+  '/mahsulot/:id': Mahsulot,
+  '/haqida': Haqida,
+  '*': () => html`${Sarlavha()}<h1>404 — sahifa topilmadi</h1>`,
+}));
+</script>
+</body>
+</html>

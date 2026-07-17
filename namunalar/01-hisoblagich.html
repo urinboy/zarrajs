@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zarra namunasi — Hisoblagich</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #E9EDF2; color: #0C1220;
+         display: grid; place-items: center; min-height: 100vh; margin: 0; }
+  .karta { background: #F5F7FA; border: 1px solid #CBD4DF; border-radius: 14px;
+           padding: 40px 48px; text-align: center; }
+  h1 { font-size: 64px; margin: 0 0 8px; color: #2B49FF; font-variant-numeric: tabular-nums; }
+  p { color: #4A5568; margin: 0 0 20px; }
+  button { font: inherit; padding: 10px 22px; border-radius: 999px; border: none;
+           cursor: pointer; background: #0C1220; color: #fff; margin: 0 4px; }
+  button:hover { background: #2B49FF; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+// Zarra bilan reaktiv hisoblagich — 15 qator.
+import { zarra, html, signal, computed } from '../src/zarra.js';
+
+const son = signal(0);
+const juftmi = computed(() => (son() % 2 === 0 ? 'juft' : 'toq'));
+
+zarra('#app', () => html`
+  <div class="karta">
+    <h1>${son}</h1>
+    <p>Bu son — ${juftmi}</p>
+    <button @click=${() => son(son() - 1)}>−1</button>
+    <button @click=${() => son(0)}>0</button>
+    <button @click=${() => son(son() + 1)}>+1</button>
+  </div>
+`);
+</script>
+</body>
+</html>
