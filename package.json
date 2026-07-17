@@ -38,5 +38,13 @@
   ],
   "author": "UrinboyDev <urinboytursunboev@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/urinboy/zarrajs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/urinboy/zarrajs/issues"
+  },
+  "homepage": "https://github.com/urinboy/zarrajs#readme",
   "sideEffects": false
 }
