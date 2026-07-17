@@ -369,7 +369,7 @@ a:focus-visible,button:focus-visible{outline:2.5px solid var(--ultra);outline-of
         <a class="btn-primary" href="#/docs" data-route>Hujjatlarni ochish</a>
         <div class="install-cmd">
           <span class="dollar">$</span>
-          <span id="install-text">npm install zarra</span>
+          <span id="install-text">npm install zarrajs</span>
           <button onclick="copyInstall(this)" aria-label="Buyruqni nusxalash">nusxalash</button>
         </div>
       </div>
@@ -507,7 +507,7 @@ a:focus-visible,button:focus-visible{outline:2.5px solid var(--ultra);outline-of
           <div class="code-titlebar"><i></i><i></i><i></i><span>index.html</span></div>
 <pre><span class="tk-cm">&lt;!-- CDN orqali, build'siz --&gt;</span>
 &lt;<span class="tk-kw">script</span> type=<span class="tk-str">"module"</span>&gt;
-  <span class="tk-kw">import</span> { zarra, html, signal } <span class="tk-kw">from</span> <span class="tk-str">'https://cdn.zarra.uz/v0/zarra.js'</span>
+  <span class="tk-kw">import</span> { zarra, html, signal } <span class="tk-kw">from</span> <span class="tk-str">'https://cdn.jsdelivr.net/npm/zarrajs@0.1/dist/zarra.min.js'</span>
 
   <span class="tk-kw">const</span> ism = <span class="tk-fn">signal</span>(<span class="tk-str">'dunyo'</span>)
   <span class="tk-fn">zarra</span>(<span class="tk-str">'#app'</span>, () => <span class="tk-fn">html</span><span class="tk-str">`Salom, ${ism}!`</span>)
@@ -523,17 +523,17 @@ a:focus-visible,button:focus-visible{outline:2.5px solid var(--ultra);outline-of
         <div class="code-window">
           <div class="code-titlebar"><i></i><i></i><i></i><span>terminal</span></div>
 <pre><span class="tk-cm"># npm</span>
-npm install zarra
+npm install zarrajs
 
 <span class="tk-cm"># yoki pnpm / yarn / bun</span>
-pnpm add zarra</pre>
+pnpm add zarrajs</pre>
         </div>
         <h2>CDN bilan</h2>
         <p>Eng tezkor start — bitta <code class="inline">script</code> teg:</p>
         <div class="code-window">
           <div class="code-titlebar"><i></i><i></i><i></i><span>index.html</span></div>
 <pre>&lt;<span class="tk-kw">script</span> type=<span class="tk-str">"module"</span>&gt;
-  <span class="tk-kw">import</span> { zarra } <span class="tk-kw">from</span> <span class="tk-str">'https://cdn.zarra.uz/v0/zarra.js'</span>
+  <span class="tk-kw">import</span> { zarra } <span class="tk-kw">from</span> <span class="tk-str">'https://cdn.jsdelivr.net/npm/zarrajs@0.1/dist/zarra.min.js'</span>
 &lt;/<span class="tk-kw">script</span>&gt;</pre>
         </div>
         <div class="doc-note">CDN versiyasi ham TypeScript tiplarini qo'llab-quvvatlaydi — VS Code'da <code class="inline">// @ts-check</code> yozsangiz kifoya.</div>
@@ -622,7 +622,7 @@ function bumpCounter(){
   document.getElementById('live-counter').textContent = count;
 }
 function copyInstall(btn){
-  navigator.clipboard && navigator.clipboard.writeText('npm install zarra');
+  navigator.clipboard && navigator.clipboard.writeText('npm install zarrajs');
   btn.textContent = 'nusxalandi ✓';
   setTimeout(() => btn.textContent = 'nusxalash', 1600);
 }

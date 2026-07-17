@@ -28,7 +28,8 @@ Hech narsa o'rnatmasdan, bitta HTML fayl:
 <div id="app"></div>
 
 <script type="module">
-  import { zarra, html, signal } from './src/zarra.js'  // yoki CDN manzili
+  import { zarra, html, signal } from 'https://cdn.jsdelivr.net/npm/zarrajs/dist/zarra.min.js'
+  // lokal ishlatishda: './src/zarra.js'
 
   const son = signal(0)
 
@@ -44,8 +45,17 @@ Tamom. Virtual DOM ham, build ham yo'q.
 npm bilan (bundler ishlatadiganlar uchun):
 
 ```bash
-npm install zarra
+npm install zarrajs
 ```
+
+```js
+import { zarra, html, signal } from 'zarrajs'
+```
+
+CDN havolalari (versiya belgilash tavsiya etiladi):
+
+- `https://cdn.jsdelivr.net/npm/zarrajs@0.1/dist/zarra.min.js`
+- `https://unpkg.com/zarrajs@0.1/dist/zarra.min.js`
 
 ---
 

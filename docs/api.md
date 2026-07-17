@@ -4,7 +4,7 @@ Butun ochiq API — 7 ta funksiya va `VERSION` konstantasi. Hammasi
 [`src/zarra.js`](../src/zarra.js) dan import qilinadi.
 
 ```js
-import { signal, computed, effect, html, zarra, router, store, VERSION } from 'zarra'
+import { signal, computed, effect, html, zarra, router, store, VERSION } from 'zarrajs'
 ```
 
 ---
