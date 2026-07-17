@@ -1,0 +1,37 @@
+{
+  "name": "zarra",
+  "version": "0.1.0",
+  "description": "Zarra — build bosqichisiz, bog'liqliksiz, 3.5 KB'dan kichik reaktiv JavaScript mikro freymvork",
+  "type": "module",
+  "main": "src/zarra.js",
+  "module": "src/zarra.js",
+  "types": "types/zarra.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/zarra.d.ts",
+      "import": "./src/zarra.js"
+    }
+  },
+  "files": [
+    "src",
+    "types",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node tests/ishga.mjs",
+    "hajm": "node tools/hajm.mjs"
+  },
+  "keywords": [
+    "reaktiv",
+    "signal",
+    "mikro-freymvork",
+    "uzbek",
+    "zarra",
+    "no-build",
+    "zero-dependency"
+  ],
+  "author": "UrinboyDev <urinboytursunboev@gmail.com>",
+  "license": "MIT",
+  "sideEffects": false
+}

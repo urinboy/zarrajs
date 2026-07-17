@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zarra — 3 KB mikro freymvork</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mist:#E9EDF2;
+  --paper:#F5F7FA;
+  --ink:#0C1220;
+  --ink-60:#4A5568;
+  --ink-30:#9AA6B5;
+  --ultra:#2B49FF;
+  --ultra-soft:#DDE3FF;
+  --line:#CBD4DF;
+  --code-bg:#0C1220;
+  --code-ink:#D7DEEA;
+  --radius:14px;
+  --font-display:"Bricolage Grotesque",sans-serif;
+  --font-body:"Instrument Sans",sans-serif;
+  --font-mono:"JetBrains Mono",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--mist);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--ultra);color:#fff}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:none;background:none}
+
+/* ---------- NAV ---------- */
+.nav{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 32px;
+  background:color-mix(in srgb, var(--mist) 82%, transparent);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-display);font-weight:700;font-size:20px;letter-spacing:-.02em;
+}
+.logo-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--ultra);
+  box-shadow:0 0 0 4px var(--ultra-soft);
+}
+.nav-links{display:flex;align-items:center;gap:28px;font-size:14.5px;font-weight:500}
+.nav-links a{color:var(--ink-60);transition:color .15s}
+.nav-links a:hover,.nav-links a.active{color:var(--ink)}
+.nav-cta{
+  padding:8px 18px;border-radius:999px;
+  background:var(--ink);color:#fff;font-weight:600;font-size:14px;
+  transition:background .15s;
+}
+.nav-cta:hover{background:var(--ultra)}
+.nav-version{
+  font-family:var(--font-mono);font-size:12px;
+  padding:3px 9px;border:1px solid var(--line);border-radius:999px;color:var(--ink-60);
+}
+
+/* ---------- HERO ---------- */
+.hero{
+  max-width:1200px;margin:0 auto;
+  padding:88px 32px 40px;
+  display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;
+}
+.eyebrow{
+  font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ultra);font-weight:500;margin-bottom:20px;display:block;
+}
+h1{
+  font-family:var(--font-display);
+  font-size:clamp(44px,5.6vw,76px);
+  font-weight:700;line-height:1.02;letter-spacing:-.035em;
+  margin-bottom:24px;
+}
+h1 em{font-style:normal;color:var(--ultra)}
+.hero p.lead{font-size:19px;color:var(--ink-60);max-width:46ch;margin-bottom:36px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.btn-primary{
+  padding:14px 28px;border-radius:999px;
+  background:var(--ultra);color:#fff;font-weight:600;font-size:15.5px;
+  transition:transform .15s, box-shadow .15s;
+  box-shadow:0 8px 24px -8px rgba(43,73,255,.5);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 32px -8px rgba(43,73,255,.55)}
+.install-cmd{
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--font-mono);font-size:14px;
+  padding:13px 20px;border:1px solid var(--line);border-radius:999px;
+  background:var(--paper);color:var(--ink-60);
+}
+.install-cmd .dollar{color:var(--ultra);font-weight:700}
+.install-cmd button{color:var(--ink-30);font-size:12px;transition:color .15s}
+.install-cmd button:hover{color:var(--ultra)}
+
+/* Signature: hajm solishtiruvi */
+.size-viz{
+  position:relative;
+  aspect-ratio:1/1;max-height:480px;
+  display:flex;align-items:center;justify-content:center;
+}
+.size-circle{
+  position:absolute;border-radius:50%;
+  border:1.5px dashed var(--ink-30);
+  display:flex;align-items:flex-start;justify-content:center;
+  animation:drift 9s ease-in-out infinite;
+}
+.size-circle .tag{
+  font-family:var(--font-mono);font-size:12px;color:var(--ink-30);
+  transform:translateY(-26px);white-space:nowrap;
+}
+.c-react{width:88%;height:88%;animation-delay:0s}
+.c-vue{width:64%;height:64%;animation-delay:-3s}
+.c-alpine{width:32%;height:32%;animation-delay:-6s}
+.zarra-dot{
+  position:relative;z-index:2;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--ultra);
+  box-shadow:0 0 0 8px var(--ultra-soft), 0 0 40px rgba(43,73,255,.6);
+  animation:pulse 2.6s ease-in-out infinite;
+}
+.zarra-label{
+  position:absolute;z-index:2;
+  top:calc(50% + 26px);left:50%;transform:translateX(-50%);
+  font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--ultra);
+  white-space:nowrap;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 8px var(--ultra-soft),0 0 40px rgba(43,73,255,.55)}
+  50%{box-shadow:0 0 0 13px var(--ultra-soft),0 0 60px rgba(43,73,255,.75)}
+}
+@keyframes drift{
+  0%,100%{transform:rotate(0deg) translateY(0)}
+  50%{transform:rotate(1.2deg) translateY(-6px)}
+}
+@media (prefers-reduced-motion: reduce){
+  .size-circle,.zarra-dot{animation:none}
+}
+
+/* ---------- STATS STRIP ---------- */
+.stats{
+  max-width:1200px;margin:0 auto;padding:0 32px 80px;
+}
+.stats-inner{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.stat{padding:26px 8px 26px 0;border-right:1px solid var(--line)}
+.stat:last-child{border-right:none}
+.stat b{
+  font-family:var(--font-display);font-size:30px;font-weight:700;letter-spacing:-.02em;
+  display:block;line-height:1.1;
+}
+.stat span{font-size:13.5px;color:var(--ink-60)}
+
+/* ---------- CODE DEMO ---------- */
+.demo{max-width:1200px;margin:0 auto;padding:40px 32px 100px}
+.section-head{margin-bottom:40px;max-width:60ch}
+h2{
+  font-family:var(--font-display);font-size:clamp(30px,3.4vw,44px);
+  font-weight:700;letter-spacing:-.03em;line-height:1.08;margin-bottom:14px;
+}
+.section-head p{color:var(--ink-60);font-size:17px}
+.demo-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:stretch}
+.code-window{
+  background:var(--code-bg);border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:0 24px 60px -24px rgba(12,18,32,.45);
+}
+.code-titlebar{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.08);
+}
+.code-titlebar i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.16)}
+.code-titlebar span{
+  margin-left:auto;font-family:var(--font-mono);font-size:12px;color:rgba(255,255,255,.4);
+}
+pre{
+  padding:22px 24px;overflow-x:auto;
+  font-family:var(--font-mono);font-size:13.8px;line-height:1.75;color:var(--code-ink);
+}
+.tk-kw{color:#8FA6FF}
+.tk-str{color:#7FE0B0}
+.tk-fn{color:#FFC98F}
+.tk-cm{color:#5A6B85}
+.demo-result{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  padding:32px;
+}
+.demo-result .counter-val{
+  font-family:var(--font-display);font-size:72px;font-weight:700;letter-spacing:-.03em;
+  color:var(--ultra);line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.demo-result .hint{font-size:13px;color:var(--ink-30);font-family:var(--font-mono)}
+.demo-btn{
+  padding:12px 30px;border-radius:999px;background:var(--ink);color:#fff;font-weight:600;
+  transition:background .15s,transform .1s;
+}
+.demo-btn:hover{background:var(--ultra)}
+.demo-btn:active{transform:scale(.97)}
+
+/* ---------- FEATURES ---------- */
+.features{max-width:1200px;margin:0 auto;padding:0 32px 110px}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.feat{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  padding:28px 26px;
+  transition:border-color .2s, transform .2s;
+}
+.feat:hover{border-color:var(--ultra);transform:translateY(-3px)}
+.feat .glyph{
+  font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--ultra);
+  background:var(--ultra-soft);
+  width:42px;height:42px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+}
+.feat h3{font-family:var(--font-display);font-size:19px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px}
+.feat p{font-size:14.5px;color:var(--ink-60)}
+
+/* ---------- CTA ---------- */
+.cta{
+  max-width:1200px;margin:0 auto 110px;padding:0 32px;
+}
+.cta-inner{
+  background:var(--ink);border-radius:calc(var(--radius) + 6px);
+  padding:72px 48px;text-align:center;color:#fff;
+  position:relative;overflow:hidden;
+}
+.cta-inner::before{
+  content:"";position:absolute;inset:auto -20% -60% -20%;height:120%;
+  background:radial-gradient(ellipse at center, rgba(43,73,255,.55), transparent 65%);
+  pointer-events:none;
+}
+.cta-inner h2{color:#fff;position:relative}
+.cta-inner p{color:rgba(255,255,255,.6);margin:12px auto 32px;max-width:44ch;position:relative}
+.cta-inner .btn-primary{position:relative}
+
+/* ---------- FOOTER ---------- */
+footer{
+  border-top:1px solid var(--line);
+  padding:28px 32px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:13.5px;color:var(--ink-60);
+}
+footer .logo{font-size:16px}
+
+/* ---------- DOCS ---------- */
+.docs-layout{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:250px 1fr;gap:56px;
+  padding:48px 32px 120px;
+  min-height:70vh;
+}
+.docs-side{position:sticky;top:88px;align-self:start}
+.docs-side .side-group{margin-bottom:26px}
+.docs-side .side-title{
+  font-family:var(--font-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-30);margin-bottom:10px;font-weight:500;
+}
+.docs-side a{
+  display:block;padding:6px 12px;margin-left:-12px;
+  font-size:14.5px;color:var(--ink-60);border-radius:8px;
+  border-left:2px solid transparent;
+  transition:color .12s,background .12s;
+}
+.docs-side a:hover{color:var(--ink);background:var(--paper)}
+.docs-side a.active{
+  color:var(--ultra);font-weight:600;
+  border-left-color:var(--ultra);border-radius:0 8px 8px 0;
+}
+.docs-content h1{font-size:clamp(32px,3.6vw,44px);margin-bottom:16px}
+.docs-content .doc-lead{font-size:17px;color:var(--ink-60);margin-bottom:36px;max-width:60ch}
+.docs-content h2{font-size:24px;margin:44px 0 14px;scroll-margin-top:90px}
+.docs-content p{margin-bottom:16px;max-width:68ch;color:#2A3341}
+.docs-content .code-window{margin:20px 0 28px;box-shadow:0 12px 32px -18px rgba(12,18,32,.35)}
+.docs-content code.inline{
+  font-family:var(--font-mono);font-size:.88em;
+  background:var(--ultra-soft);color:var(--ultra);
+  padding:2px 7px;border-radius:6px;
+}
+.doc-note{
+  border:1px solid var(--line);border-left:3px solid var(--ultra);
+  background:var(--paper);border-radius:0 10px 10px 0;
+  padding:14px 18px;font-size:14.5px;color:var(--ink-60);
+  margin:20px 0;max-width:68ch;
+}
+.doc-table{
+  width:100%;max-width:68ch;border-collapse:collapse;font-size:14.5px;margin:16px 0 28px;
+}
+.doc-table th{
+  text-align:left;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-30);padding:10px 14px;border-bottom:1px solid var(--line);font-weight:500;
+}
+.doc-table td{padding:11px 14px;border-bottom:1px solid var(--line)}
+.doc-table td:first-child{font-family:var(--font-mono);font-size:13.5px;color:var(--ultra);font-weight:500}
+.doc-page{display:none}
+.doc-page.visible{display:block;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.doc-page.visible{animation:none}}
+
+/* ---------- VIEW TOGGLE ---------- */
+#view-landing,#view-docs{display:none}
+#view-landing.visible,#view-docs.visible{display:block}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:960px){
+  .hero{grid-template-columns:1fr;padding-top:56px;gap:40px}
+  .size-viz{max-height:340px;order:-1}
+  .stats-inner{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(2){border-right:none}
+  .stat{border-bottom:1px solid var(--line)}
+  .stat:nth-child(3),.stat:nth-child(4){border-bottom:none}
+  .demo-grid{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .docs-layout{grid-template-columns:1fr;gap:28px}
+  .docs-side{position:static;display:flex;flex-wrap:wrap;gap:6px 14px}
+  .docs-side .side-group{margin:0;display:contents}
+  .docs-side .side-title{display:none}
+  .nav-links{gap:16px}
+  .nav-links .hide-mobile{display:none}
+}
+@media (max-width:600px){
+  .feat-grid{grid-template-columns:1fr}
+  .nav{padding:14px 20px}
+  .hero,.stats,.demo,.features,.cta{padding-left:20px;padding-right:20px}
+  .cta-inner{padding:52px 24px}
+}
+a:focus-visible,button:focus-visible{outline:2.5px solid var(--ultra);outline-offset:3px;border-radius:6px}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#/" class="logo" data-route><span class="logo-dot"></span>Zarra</a>
+  <div class="nav-links">
+    <a href="#/" data-route data-nav="landing">Bosh sahifa</a>
+    <a href="#/docs" data-route data-nav="docs">Hujjatlar</a>
+    <a href="#features" class="hide-mobile">Imkoniyatlar</a>
+    <span class="nav-version">v0.1.0</span>
+    <a class="nav-cta" href="#/docs" data-route>Boshlash</a>
+  </div>
+</nav>
+
+<!-- ============ LANDING ============ -->
+<main id="view-landing" class="visible">
+
+  <section class="hero">
+    <div>
+      <span class="eyebrow">JavaScript mikro freymvork</span>
+      <h1>Katta ishlar uchun <em>zarradek</em> yadro.</h1>
+      <p class="lead">Zarra — reaktiv interfeyslar uchun 3 KB'lik freymvork. Build bosqichisiz, bog'liqliklarsiz, o'rganish uchun bir kechqurun kifoya.</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#/docs" data-route>Hujjatlarni ochish</a>
+        <div class="install-cmd">
+          <span class="dollar">$</span>
+          <span id="install-text">npm install zarra</span>
+          <button onclick="copyInstall(this)" aria-label="Buyruqni nusxalash">nusxalash</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="size-viz" aria-label="Freymvork hajmlarini solishtirish: Zarra 3.2 KB, boshqalari ancha katta">
+      <div class="size-circle c-react"><span class="tag">React · 44 KB</span></div>
+      <div class="size-circle c-vue"><span class="tag">Vue · 34 KB</span></div>
+      <div class="size-circle c-alpine"><span class="tag">Alpine · 15 KB</span></div>
+      <div class="zarra-dot"></div>
+      <span class="zarra-label">Zarra · 3.2 KB</span>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stats-inner">
+      <div class="stat"><b>3.2 KB</b><span>gzip qilingan yadro</span></div>
+      <div class="stat"><b>0</b><span>tashqi bog'liqlik</span></div>
+      <div class="stat"><b>~1 ms</b><span>o'rtacha render vaqti</span></div>
+      <div class="stat"><b>100%</b><span>build bosqichisiz ishlaydi</span></div>
+    </div>
+  </section>
+
+  <section class="demo">
+    <div class="section-head">
+      <h2>Kod qanchalik oz bo'lsa, xato ham shunchalik oz.</h2>
+      <p>Reaktiv hisoblagich — 9 qator. O'ng tomonda xuddi shu kod jonli ishlayapti.</p>
+    </div>
+    <div class="demo-grid">
+      <div class="code-window">
+        <div class="code-titlebar"><i></i><i></i><i></i><span>counter.js</span></div>
+<pre><span class="tk-kw">import</span> { zarra, signal } <span class="tk-kw">from</span> <span class="tk-str">'zarra'</span>
+
+<span class="tk-kw">const</span> son = <span class="tk-fn">signal</span>(<span class="tk-str">0</span>)
+
+<span class="tk-fn">zarra</span>(<span class="tk-str">'#app'</span>, () => <span class="tk-str">`
+  &lt;h1&gt;${son()}&lt;/h1&gt;
+  &lt;button @click=${() => son(son() + 1)}&gt;
+    Bosing
+  &lt;/button&gt;
+`</span>)
+
+<span class="tk-cm">// Tamom. Virtual DOM ham, build ham yo'q.</span></pre>
+      </div>
+      <div class="demo-result">
+        <div class="counter-val" id="live-counter">0</div>
+        <button class="demo-btn" onclick="bumpCounter()">Bosing</button>
+        <span class="hint">← bu haqiqiy signal, sinab ko'ring</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="section-head">
+      <h2>Faqat keragi bor narsalar.</h2>
+      <p>Zarra falsafasi oddiy: freymvork sizga emas, siz freymvorkka buyruq berasiz.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat">
+        <div class="glyph">σ</div>
+        <h3>Signal'lar</h3>
+        <p>Nozik reaktivlik: qiymat o'zgarsa, faqat unga bog'liq DOM tuguni yangilanadi. Diff yo'q, keraksiz render yo'q.</p>
+      </div>
+      <div class="feat">
+        <div class="glyph">Ø</div>
+        <h3>Nol build</h3>
+        <p>Bitta <b>&lt;script&gt;</b> teg — ishlaydi. Webpack, Vite, konfiguratsiya fayllari shart emas. Xohlasangiz — npm orqali ham.</p>
+      </div>
+      <div class="feat">
+        <div class="glyph">λ</div>
+        <h3>Komponent = funksiya</h3>
+        <p>Klass yo'q, lifecycle sehri yo'q. Oddiy funksiya shablon qaytaradi — hammasi shu.</p>
+      </div>
+      <div class="feat">
+        <div class="glyph">⇄</div>
+        <h3>Ikki tomonlama binding</h3>
+        <p><b>@model</b> direktivasi forma elementlarini signal bilan avtomatik bog'laydi.</p>
+      </div>
+      <div class="feat">
+        <div class="glyph">#</div>
+        <h3>Hash-router ichida</h3>
+        <p>SPA uchun yengil marshrutlash yadroga kiritilgan. Alohida paket o'rnatish shart emas.</p>
+      </div>
+      <div class="feat">
+        <div class="glyph">TS</div>
+        <h3>TypeScript tayyor</h3>
+        <p>To'liq tip deklaratsiyalari qutidan chiqadi. Muharriringiz hamma narsani bilib turadi.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="cta-inner">
+      <h2>Bir kechqurunda o'rganing.</h2>
+      <p>Hujjatlar qisqa, misollar jonli. Ertaga birinchi loyihangiz tayyor bo'ladi.</p>
+      <a class="btn-primary" href="#/docs" data-route>Hujjatlarga o'tish</a>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ DOCS ============ -->
+<main id="view-docs">
+  <div class="docs-layout">
+
+    <aside class="docs-side">
+      <div class="side-group">
+        <div class="side-title">Kirish</div>
+        <a href="#/docs" data-route data-doc="intro" class="active">Zarra nima?</a>
+        <a href="#/docs/install" data-route data-doc="install">O'rnatish</a>
+      </div>
+      <div class="side-group">
+        <div class="side-title">Asoslar</div>
+        <a href="#/docs/signals" data-route data-doc="signals">Signal'lar</a>
+        <a href="#/docs/components" data-route data-doc="components">Komponentlar</a>
+      </div>
+      <div class="side-group">
+        <div class="side-title">Ma'lumotnoma</div>
+        <a href="#/docs/api" data-route data-doc="api">API</a>
+      </div>
+    </aside>
+
+    <div class="docs-content">
+
+      <!-- Kirish -->
+      <article class="doc-page visible" id="doc-intro">
+        <h1>Zarra nima?</h1>
+        <p class="doc-lead">Zarra — zamonaviy brauzerlar uchun yozilgan 3.2 KB hajmdagi reaktiv UI freymvork. U kichik, lekin to'laqonli: signal'lar, komponentlar va router bitta yadroda.</p>
+        <h2>Nega yana bitta freymvork?</h2>
+        <p>Ko'p loyihalar uchun React yoki Vue — ortiqcha yuk: build pipeline, yuzlab bog'liqliklar, sekundlab yuklanish. Zarra teskari yo'ldan boradi: brauzerda allaqachon bor imkoniyatlardan foydalanadi va faqat yetishmayotgan qatlamni — reaktivlikni qo'shadi.</p>
+        <p>Zarra kimga mos: landing sahifalar, admin panellar, vidjetlar, va katta freymvork o'rnatishga arzimaydigan har qanday interaktiv sahifa uchun.</p>
+        <div class="doc-note">Zarra so'zi o'zbekchada "eng kichik bo'lak" degani — freymvork falsafasi ham shunda: minimal yadro, maksimal natija.</div>
+        <h2>Bir qarashda</h2>
+        <div class="code-window">
+          <div class="code-titlebar"><i></i><i></i><i></i><span>index.html</span></div>
+<pre><span class="tk-cm">&lt;!-- CDN orqali, build'siz --&gt;</span>
+&lt;<span class="tk-kw">script</span> type=<span class="tk-str">"module"</span>&gt;
+  <span class="tk-kw">import</span> { zarra, signal } <span class="tk-kw">from</span> <span class="tk-str">'https://cdn.zarra.uz/v0/zarra.js'</span>
+
+  <span class="tk-kw">const</span> ism = <span class="tk-fn">signal</span>(<span class="tk-str">'dunyo'</span>)
+  <span class="tk-fn">zarra</span>(<span class="tk-str">'#app'</span>, () => <span class="tk-str">`Salom, ${ism()}!`</span>)
+&lt;/<span class="tk-kw">script</span>&gt;</pre>
+        </div>
+      </article>
+
+      <!-- O'rnatish -->
+      <article class="doc-page" id="doc-install">
+        <h1>O'rnatish</h1>
+        <p class="doc-lead">Ikki yo'l bor: npm orqali (bundler bilan) yoki CDN orqali (hech narsasiz). Ikkalasi ham bir xil API beradi.</p>
+        <h2>npm bilan</h2>
+        <div class="code-window">
+          <div class="code-titlebar"><i></i><i></i><i></i><span>terminal</span></div>
+<pre><span class="tk-cm"># npm</span>
+npm install zarra
+
+<span class="tk-cm"># yoki pnpm / yarn / bun</span>
+pnpm add zarra</pre>
+        </div>
+        <h2>CDN bilan</h2>
+        <p>Eng tezkor start — bitta <code class="inline">script</code> teg:</p>
+        <div class="code-window">
+          <div class="code-titlebar"><i></i><i></i><i></i><span>index.html</span></div>
+<pre>&lt;<span class="tk-kw">script</span> type=<span class="tk-str">"module"</span>&gt;
+  <span class="tk-kw">import</span> { zarra } <span class="tk-kw">from</span> <span class="tk-str">'https://cdn.zarra.uz/v0/zarra.js'</span>
+&lt;/<span class="tk-kw">script</span>&gt;</pre>
+        </div>
+        <div class="doc-note">CDN versiyasi ham TypeScript tiplarini qo'llab-quvvatlaydi — VS Code'da <code class="inline">// @ts-check</code> yozsangiz kifoya.</div>
+      </article>
+
+      <!-- Signal'lar -->
+      <article class="doc-page" id="doc-signals">
+        <h1>Signal'lar</h1>
+        <p class="doc-lead">Signal — Zarra reaktivligining yuragi. Bu qiymat saqlaydigan funksiya: argumentsiz chaqirsangiz — o'qiydi, argument bilan — yozadi.</p>
+        <h2>Yaratish va ishlatish</h2>
+        <div class="code-window">
+          <div class="code-titlebar"><i></i><i></i><i></i><span>signals.js</span></div>
+<pre><span class="tk-kw">import</span> { signal, computed, effect } <span class="tk-kw">from</span> <span class="tk-str">'zarra'</span>
+
+<span class="tk-kw">const</span> narx = <span class="tk-fn">signal</span>(<span class="tk-str">120_000</span>)
+<span class="tk-kw">const</span> soni = <span class="tk-fn">signal</span>(<span class="tk-str">2</span>)
+
+<span class="tk-cm">// hosilaviy qiymat — bog'liqliklar avtomatik kuzatiladi</span>
+<span class="tk-kw">const</span> jami = <span class="tk-fn">computed</span>(() => narx() * soni())
+
+<span class="tk-fn">effect</span>(() => console.<span class="tk-fn">log</span>(<span class="tk-str">`Jami: ${jami()} so'm`</span>))
+
+soni(<span class="tk-str">3</span>)  <span class="tk-cm">// → "Jami: 360000 so'm"</span></pre>
+        </div>
+        <h2>Nima uchun getter/setter emas?</h2>
+        <p>Funksiya-chaqiriq sintaksisi Zarra'ga qaysi kod qaysi signalga bog'liqligini aniq bilish imkonini beradi. Shu tufayli qiymat o'zgarganda butun komponent emas, faqat tegishli DOM tuguni yangilanadi.</p>
+      </article>
+
+      <!-- Komponentlar -->
+      <article class="doc-page" id="doc-components">
+        <h1>Komponentlar</h1>
+        <p class="doc-lead">Zarra'da komponent — shablon qaytaruvchi oddiy funksiya. Props — funksiya argumentlari, holat — yopilma (closure) ichidagi signal'lar.</p>
+        <h2>Birinchi komponent</h2>
+        <div class="code-window">
+          <div class="code-titlebar"><i></i><i></i><i></i><span>TodoItem.js</span></div>
+<pre><span class="tk-kw">export function</span> <span class="tk-fn">TodoItem</span>({ matn, bajarildi }) {
+  <span class="tk-kw">return</span> () => <span class="tk-str">`
+    &lt;li class="${bajarildi() ? 'done' : ''}"&gt;
+      &lt;input type="checkbox" @model=${bajarildi} /&gt;
+      &lt;span&gt;${matn}&lt;/span&gt;
+    &lt;/li&gt;
+  `</span>
+}</pre>
+        </div>
+        <h2>Direktivalar</h2>
+        <table class="doc-table">
+          <tr><th>Direktiva</th><th>Vazifasi</th></tr>
+          <tr><td>@click</td><td>Hodisa tinglovchisi (istalgan DOM hodisasi uchun @nomi)</td></tr>
+          <tr><td>@model</td><td>Forma elementi ↔ signal ikki tomonlama bog'lanishi</td></tr>
+          <tr><td>@if</td><td>Shartli render</td></tr>
+          <tr><td>@for</td><td>Ro'yxat renderi (kalitlangan)</td></tr>
+        </table>
+      </article>
+
+      <!-- API -->
+      <article class="doc-page" id="doc-api">
+        <h1>API ma'lumotnomasi</h1>
+        <p class="doc-lead">Zarra'ning butun ochiq API'si — oltita funksiya. Hammasi shu sahifaga sig'adi.</p>
+        <table class="doc-table">
+          <tr><th>Funksiya</th><th>Imzo</th><th>Tavsif</th></tr>
+          <tr><td>zarra()</td><td>(selektor, shablon)</td><td>Ilovani DOM tuguniga o'rnatadi</td></tr>
+          <tr><td>signal()</td><td>(boshlangichQiymat)</td><td>Reaktiv qiymat yaratadi</td></tr>
+          <tr><td>computed()</td><td>(fn)</td><td>Hosilaviy, keshlanuvchi qiymat</td></tr>
+          <tr><td>effect()</td><td>(fn)</td><td>Bog'liqliklar o'zgarsa qayta ishlaydi</td></tr>
+          <tr><td>router()</td><td>(marshrutlar)</td><td>Hash-asosli SPA marshrutlash</td></tr>
+          <tr><td>store()</td><td>(obyekt)</td><td>Global holat (signal'lar to'plami)</td></tr>
+        </table>
+        <div class="doc-note">v0.1.0 — API hali barqarorlashmagan. v1 gacha kichik o'zgarishlar bo'lishi mumkin.</div>
+      </article>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <a href="#/" class="logo" data-route><span class="logo-dot"></span>Zarra</a>
+  <span>MIT litsenziya · UrinboyDev tomonidan ishlab chiqilgan</span>
+</footer>
+
+<script>
+/* --- jonli demo hisoblagich --- */
+let count = 0;
+function bumpCounter(){
+  count++;
+  document.getElementById('live-counter').textContent = count;
+}
+function copyInstall(btn){
+  navigator.clipboard && navigator.clipboard.writeText('npm install zarra');
+  btn.textContent = 'nusxalandi ✓';
+  setTimeout(() => btn.textContent = 'nusxalash', 1600);
+}
+
+/* --- hash router: landing ↔ docs --- */
+const landing = document.getElementById('view-landing');
+const docs = document.getElementById('view-docs');
+
+function route(){
+  const h = location.hash || '#/';
+  const isDocs = h.startsWith('#/docs');
+
+  landing.classList.toggle('visible', !isDocs);
+  docs.classList.toggle('visible', isDocs);
+
+  document.querySelectorAll('[data-nav]').forEach(a => {
+    a.classList.toggle('active', a.dataset.nav === (isDocs ? 'docs' : 'landing'));
+  });
+
+  if(isDocs){
+    const page = h.replace('#/docs','').replace('/','') || 'intro';
+    document.querySelectorAll('.doc-page').forEach(p => p.classList.remove('visible'));
+    const target = document.getElementById('doc-' + page) || document.getElementById('doc-intro');
+    target.classList.add('visible');
+    document.querySelectorAll('.docs-side a').forEach(a => {
+      a.classList.toggle('active', (a.dataset.doc || '') === target.id.replace('doc-',''));
+    });
+    window.scrollTo({top:0, behavior:'instant'});
+  }
+}
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
