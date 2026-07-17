@@ -12,15 +12,20 @@
       "import": "./src/zarra.js"
     }
   },
+  "unpkg": "dist/zarra.min.js",
+  "jsdelivr": "dist/zarra.min.js",
   "files": [
     "src",
+    "dist",
     "types",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "test": "node tests/ishga.mjs",
-    "hajm": "node tools/hajm.mjs"
+    "build": "npx -y esbuild src/zarra.js --minify --format=esm --outfile=dist/zarra.min.js",
+    "hajm": "node tools/hajm.mjs",
+    "serve": "node tools/server.mjs"
   },
   "keywords": [
     "reaktiv",
