@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zarra — 3 KB mikro freymvork</title>
+<title>Zarra — 3.4 KB mikro freymvork</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -364,7 +364,7 @@ a:focus-visible,button:focus-visible{outline:2.5px solid var(--ultra);outline-of
     <div>
       <span class="eyebrow">JavaScript mikro freymvork</span>
       <h1>Katta ishlar uchun <em>zarradek</em> yadro.</h1>
-      <p class="lead">Zarra — reaktiv interfeyslar uchun 3 KB'lik freymvork. Build bosqichisiz, bog'liqliklarsiz, o'rganish uchun bir kechqurun kifoya.</p>
+      <p class="lead">Zarra — reaktiv interfeyslar uchun 3.4 KB'lik freymvork. Build bosqichisiz, bog'liqliklarsiz, o'rganish uchun bir kechqurun kifoya.</p>
       <div class="hero-actions">
         <a class="btn-primary" href="#/docs" data-route>Hujjatlarni ochish</a>
         <div class="install-cmd">
@@ -375,18 +375,18 @@ a:focus-visible,button:focus-visible{outline:2.5px solid var(--ultra);outline-of
       </div>
     </div>
 
-    <div class="size-viz" aria-label="Freymvork hajmlarini solishtirish: Zarra 3.2 KB, boshqalari ancha katta">
+    <div class="size-viz" aria-label="Freymvork hajmlarini solishtirish: Zarra 3.4 KB, boshqalari ancha katta">
       <div class="size-circle c-react"><span class="tag">React · 44 KB</span></div>
       <div class="size-circle c-vue"><span class="tag">Vue · 34 KB</span></div>
       <div class="size-circle c-alpine"><span class="tag">Alpine · 15 KB</span></div>
       <div class="zarra-dot"></div>
-      <span class="zarra-label">Zarra · 3.2 KB</span>
+      <span class="zarra-label">Zarra · 3.4 KB</span>
     </div>
   </section>
 
   <section class="stats">
     <div class="stats-inner">
-      <div class="stat"><b>3.2 KB</b><span>gzip qilingan yadro</span></div>
+      <div class="stat"><b>3.4 KB</b><span>gzip qilingan yadro</span></div>
       <div class="stat"><b>0</b><span>tashqi bog'liqlik</span></div>
       <div class="stat"><b>~1 ms</b><span>o'rtacha render vaqti</span></div>
       <div class="stat"><b>100%</b><span>build bosqichisiz ishlaydi</span></div>
@@ -401,12 +401,12 @@ a:focus-visible,button:focus-visible{outline:2.5px solid var(--ultra);outline-of
     <div class="demo-grid">
       <div class="code-window">
         <div class="code-titlebar"><i></i><i></i><i></i><span>counter.js</span></div>
-<pre><span class="tk-kw">import</span> { zarra, signal } <span class="tk-kw">from</span> <span class="tk-str">'zarra'</span>
+<pre><span class="tk-kw">import</span> { zarra, html, signal } <span class="tk-kw">from</span> <span class="tk-str">'zarra'</span>
 
 <span class="tk-kw">const</span> son = <span class="tk-fn">signal</span>(<span class="tk-str">0</span>)
 
-<span class="tk-fn">zarra</span>(<span class="tk-str">'#app'</span>, () => <span class="tk-str">`
-  &lt;h1&gt;${son()}&lt;/h1&gt;
+<span class="tk-fn">zarra</span>(<span class="tk-str">'#app'</span>, () => <span class="tk-fn">html</span><span class="tk-str">`
+  &lt;h1&gt;${son}&lt;/h1&gt;
   &lt;button @click=${() => son(son() + 1)}&gt;
     Bosing
   &lt;/button&gt;
@@ -497,7 +497,7 @@ a:focus-visible,button:focus-visible{outline:2.5px solid var(--ultra);outline-of
       <!-- Kirish -->
       <article class="doc-page visible" id="doc-intro">
         <h1>Zarra nima?</h1>
-        <p class="doc-lead">Zarra — zamonaviy brauzerlar uchun yozilgan 3.2 KB hajmdagi reaktiv UI freymvork. U kichik, lekin to'laqonli: signal'lar, komponentlar va router bitta yadroda.</p>
+        <p class="doc-lead">Zarra — zamonaviy brauzerlar uchun yozilgan 3.4 KB hajmdagi reaktiv UI freymvork. U kichik, lekin to'laqonli: signal'lar, komponentlar va router bitta yadroda.</p>
         <h2>Nega yana bitta freymvork?</h2>
         <p>Ko'p loyihalar uchun React yoki Vue — ortiqcha yuk: build pipeline, yuzlab bog'liqliklar, sekundlab yuklanish. Zarra teskari yo'ldan boradi: brauzerda allaqachon bor imkoniyatlardan foydalanadi va faqat yetishmayotgan qatlamni — reaktivlikni qo'shadi.</p>
         <p>Zarra kimga mos: landing sahifalar, admin panellar, vidjetlar, va katta freymvork o'rnatishga arzimaydigan har qanday interaktiv sahifa uchun.</p>
@@ -507,10 +507,10 @@ a:focus-visible,button:focus-visible{outline:2.5px solid var(--ultra);outline-of
           <div class="code-titlebar"><i></i><i></i><i></i><span>index.html</span></div>
 <pre><span class="tk-cm">&lt;!-- CDN orqali, build'siz --&gt;</span>
 &lt;<span class="tk-kw">script</span> type=<span class="tk-str">"module"</span>&gt;
-  <span class="tk-kw">import</span> { zarra, signal } <span class="tk-kw">from</span> <span class="tk-str">'https://cdn.zarra.uz/v0/zarra.js'</span>
+  <span class="tk-kw">import</span> { zarra, html, signal } <span class="tk-kw">from</span> <span class="tk-str">'https://cdn.zarra.uz/v0/zarra.js'</span>
 
   <span class="tk-kw">const</span> ism = <span class="tk-fn">signal</span>(<span class="tk-str">'dunyo'</span>)
-  <span class="tk-fn">zarra</span>(<span class="tk-str">'#app'</span>, () => <span class="tk-str">`Salom, ${ism()}!`</span>)
+  <span class="tk-fn">zarra</span>(<span class="tk-str">'#app'</span>, () => <span class="tk-fn">html</span><span class="tk-str">`Salom, ${ism}!`</span>)
 &lt;/<span class="tk-kw">script</span>&gt;</pre>
         </div>
       </article>
@@ -569,9 +569,9 @@ soni(<span class="tk-str">3</span>)  <span class="tk-cm">// → "Jami: 360000 so
         <h2>Birinchi komponent</h2>
         <div class="code-window">
           <div class="code-titlebar"><i></i><i></i><i></i><span>TodoItem.js</span></div>
-<pre><span class="tk-kw">export function</span> <span class="tk-fn">TodoItem</span>({ matn, bajarildi }) {
-  <span class="tk-kw">return</span> () => <span class="tk-str">`
-    &lt;li class="${bajarildi() ? 'done' : ''}"&gt;
+<pre><span class="tk-kw">export function</span> <span class="tk-fn">TodoItem</span>({ id, matn, bajarildi }) {
+  <span class="tk-kw">return</span> <span class="tk-fn">html</span><span class="tk-str">`
+    &lt;li key=${id} class=${() => bajarildi() ? 'done' : ''}&gt;
       &lt;input type="checkbox" @model=${bajarildi} /&gt;
       &lt;span&gt;${matn}&lt;/span&gt;
     &lt;/li&gt;
@@ -584,20 +584,21 @@ soni(<span class="tk-str">3</span>)  <span class="tk-cm">// → "Jami: 360000 so
           <tr><td>@click</td><td>Hodisa tinglovchisi (istalgan DOM hodisasi uchun @nomi)</td></tr>
           <tr><td>@model</td><td>Forma elementi ↔ signal ikki tomonlama bog'lanishi</td></tr>
           <tr><td>@if</td><td>Shartli render</td></tr>
-          <tr><td>@for</td><td>Ro'yxat renderi (kalitlangan)</td></tr>
+          <tr><td>key</td><td>Ro'yxat kaliti — ro'yxatlar oddiy .map() bilan yoziladi (React'dagidek)</td></tr>
         </table>
       </article>
 
       <!-- API -->
       <article class="doc-page" id="doc-api">
         <h1>API ma'lumotnomasi</h1>
-        <p class="doc-lead">Zarra'ning butun ochiq API'si — oltita funksiya. Hammasi shu sahifaga sig'adi.</p>
+        <p class="doc-lead">Zarra'ning butun ochiq API'si — yettita funksiya. Hammasi shu sahifaga sig'adi.</p>
         <table class="doc-table">
           <tr><th>Funksiya</th><th>Imzo</th><th>Tavsif</th></tr>
-          <tr><td>zarra()</td><td>(selektor, shablon)</td><td>Ilovani DOM tuguniga o'rnatadi</td></tr>
           <tr><td>signal()</td><td>(boshlangichQiymat)</td><td>Reaktiv qiymat yaratadi</td></tr>
           <tr><td>computed()</td><td>(fn)</td><td>Hosilaviy, keshlanuvchi qiymat</td></tr>
           <tr><td>effect()</td><td>(fn)</td><td>Bog'liqliklar o'zgarsa qayta ishlaydi</td></tr>
+          <tr><td>html``</td><td>tagged template</td><td>Shablon yaratadi (avtomatik XSS-escape)</td></tr>
+          <tr><td>zarra()</td><td>(selektor, komponent)</td><td>Ilovani DOM tuguniga o'rnatadi</td></tr>
           <tr><td>router()</td><td>(marshrutlar)</td><td>Hash-asosli SPA marshrutlash</td></tr>
           <tr><td>store()</td><td>(obyekt)</td><td>Global holat (signal'lar to'plami)</td></tr>
         </table>
