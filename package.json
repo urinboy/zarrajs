@@ -1,5 +1,5 @@
 {
-  "name": "zarra",
+  "name": "@urinboydev/zarra",
   "version": "0.1.0",
   "description": "Zarra — build bosqichisiz, bog'liqliksiz, 3.5 KB'dan kichik reaktiv JavaScript mikro freymvork",
   "type": "module",
