@@ -1,7 +1,7 @@
 {
-  "name": "@urinboydev/zarra",
+  "name": "zarrajs",
   "version": "0.1.0",
-  "description": "Zarra — build bosqichisiz, bog'liqliksiz, 3.5 KB'dan kichik reaktiv JavaScript mikro freymvork",
+  "description": "ZarraJS — build bosqichisiz, bog'liqliksiz, 3.5 KB'dan kichik reaktiv JavaScript mikro freymvork",
   "type": "module",
   "main": "src/zarra.js",
   "module": "src/zarra.js",
@@ -33,6 +33,7 @@
     "mikro-freymvork",
     "uzbek",
     "zarra",
+    "zarrajs",
     "no-build",
     "zero-dependency"
   ],
