@@ -184,3 +184,71 @@ test("computed: effect ichida o'qilsa, signal kabi kuzatiladi", async () => {
   await kut();
   teng(korilgan, [2, 4]);
 });
+
+test("signal: konstruktordagi funksiya chaqirilmasdan, qiymat sifatida saqlanadi", () => {
+  const f = () => 42;
+  const sig = signal(f);
+  rost(sig() === f, "signal(fn) — fn o'zi qiymat bo'lishi kerak, natijasi emas");
+});
+
+test('effect: fn birinchi ishga tushganda xato tashlasa, xato yutilmaydi', () => {
+  let ushlandi = false;
+  try {
+    effect(() => {
+      throw new Error('atayin');
+    });
+  } catch (x) {
+    ushlandi = true;
+    teng(x.message, 'atayin');
+  }
+  rost(ushlandi, "effect() ichidagi xato tashqariga chiqishi kerak");
+});
+
+test("effect: bitta effect xato tashlagandan keyin ham boshqalar normal ishlaydi", async () => {
+  const a = signal(1);
+  try {
+    effect(() => {
+      throw new Error('x');
+    });
+  } catch {}
+  const korilgan = [];
+  effect(() => korilgan.push(a()));
+  a(2);
+  await kut();
+  teng(korilgan, [1, 2], "oldingi effect'dagi xatodan keyin ham reaktivlik buzilmasligi kerak");
+});
+
+test("computed: hisoblashda xato tashlansa, keyingi o'qishda qayta hisoblanadi", () => {
+  const rejim = signal('xato');
+  let hisobSoni = 0;
+  const c = computed(() => {
+    hisobSoni++;
+    if (rejim() === 'xato') throw new Error("hisoblab bo'lmadi");
+    return rejim().length;
+  });
+  let birinchiXato = null;
+  try {
+    c();
+  } catch (x) {
+    birinchiXato = x;
+  }
+  rost(birinchiXato !== null, 'birinchi oqishda xato chiqishi kerak');
+  rejim('togri');
+  teng(c(), 5, "xatodan keyin ham qayta hisoblash ishlashi kerak");
+  teng(hisobSoni, 2, "xato holatda natija keshlanmasligi, qayta urinish bo'lishi kerak");
+});
+
+test("effect: bitta signalni bir necha marta o'qisa ham, o'zgarishda faqat bir marta ishga tushadi", async () => {
+  const a = signal(1);
+  let ishlashSoni = 0;
+  effect(() => {
+    a();
+    a();
+    a();
+    ishlashSoni++;
+  });
+  teng(ishlashSoni, 1);
+  a(2);
+  await kut();
+  teng(ishlashSoni, 2, "bitta o'zgarish uchun effect faqat bir marta ishga tushishi kerak");
+});

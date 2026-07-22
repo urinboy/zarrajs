@@ -334,6 +334,52 @@ await test('jadval ichida ro\'yxat (tr) — parser buzmaydi', async (q) => {
   teng(q.querySelector('td').textContent, 'a');
 });
 
+await test("ro'yxat: yangilashda takrorlangan key — birinchisi eski tugunni oladi, ikkinchisi yangi yaratiladi", async (q) => {
+  const narsalar = signal([
+    { id: 'a', nom: 'olma' },
+    { id: 'b', nom: 'anor' },
+  ]);
+  zarra(q, () => html`<ul>${() => narsalar().map((n) => html`<li key=${n.id}>${n.nom}</li>`)}</ul>`);
+  const eskiA = q.querySelectorAll('li')[0];
+  narsalar([
+    { id: 'a', nom: 'birinchi-a' },
+    { id: 'a', nom: 'ikkinchi-a' },
+  ]);
+  await kut();
+  const litlar = [...q.querySelectorAll('li')];
+  teng(litlar.length, 2, "ikkala yozuv ham DOM'da qolishi kerak, dastur qulamasligi kerak");
+  teng(litlar.map((li) => li.textContent), ['birinchi-a', 'ikkinchi-a']);
+  rost(litlar[0] === eskiA, "birinchi 'a' kaliti eski tugunni qayta ishlatishi kerak");
+});
+
+await test('@if: oddiy (funksiya bo\'lmagan) qiymat bilan bir martalik render', async (q) => {
+  zarra(q, () => html`<div><p @if=${true}>ko'rinadi</p><span @if=${false}>ko'rinmaydi</span></div>`);
+  teng(q.querySelectorAll('p').length, 1, 'true — element DOM\'da qolishi kerak');
+  teng(q.querySelectorAll('span').length, 0, 'false — element boshidanoq DOM\'da bo\'lmasligi kerak');
+});
+
+await test('@model: type=number bo\'sh qatorga tozalansa signal bo\'sh string bo\'ladi', async (q) => {
+  const son = signal(5);
+  zarra(q, () => html`<input type="number" @model=${son}>`);
+  const input = q.querySelector('input');
+  input.value = '';
+  input.dispatchEvent(new Event('input'));
+  teng(son(), '', "bo'sh input NaN emas, bo'sh stringga aylanishi kerak");
+});
+
+await test("ro'yxat: bo'shab, qayta to'lganda tugunlar toza qayta yaratiladi", async (q) => {
+  const royxat = signal([{ id: 1, nom: 'bir' }, { id: 2, nom: 'ikki' }]);
+  zarra(q, () => html`<ul>${() => royxat().map((n) => html`<li key=${n.id}>${n.nom}</li>`)}</ul>`);
+  teng(q.querySelectorAll('li').length, 2);
+  royxat([]);
+  await kut();
+  teng(q.querySelectorAll('li').length, 0, "bo'sh massivda hech qanday li qolmasligi kerak");
+  royxat([{ id: 3, nom: 'uch' }]);
+  await kut();
+  teng(q.querySelectorAll('li').length, 1);
+  teng(q.querySelector('li').textContent, 'uch');
+});
+
 /* ---------------- XULOSA ---------------- */
 
 const xulosa = document.getElementById('xulosa');

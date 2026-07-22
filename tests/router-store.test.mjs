@@ -102,3 +102,27 @@ test('html: strings va qiymatlarni ajratib beradi (DOM talab qilmaydi)', () => {
   teng(natija.qiymatlar, ['salom']);
   teng([...natija.strings], ['<h1>', '</h1>']);
 });
+
+test("router: bir nechta naqsh mos kelsa, obyektda birinchi yozilgani g'olib chiqadi", () => {
+  location.hash = '#/post/yangi';
+  // ':id' parametrli marshrut ANIQ '/post/yangi' marshrutidan OLDIN yozilgan —
+  // shuning uchun 'yangi' ham :id sifatida ushlanadi, pastdagi aniq marshrut ishlamaydi.
+  const komp = router({
+    '/post/:id': (p) => `id-${p.id}`,
+    '/post/yangi': () => 'yangi-sahifa',
+  });
+  teng(komp(), 'id-yangi', "obyekt xususiyat tartibi marshrut ustuvorligini belgilaydi");
+});
+
+test("store: boshlang'ich null/false qiymatlar ham reaktiv signalga o'raladi", async () => {
+  const doken = store({ tanlangan: null, yoqilgan: false });
+  const korilgan = [];
+  effect(() => korilgan.push([doken.tanlangan, doken.yoqilgan]));
+  doken.tanlangan = 'ali';
+  doken.yoqilgan = true;
+  await kut();
+  teng(korilgan, [
+    [null, false],
+    ['ali', true],
+  ]);
+});
