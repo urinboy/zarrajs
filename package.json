@@ -47,5 +47,11 @@
     "url": "https://github.com/urinboy/zarrajs/issues"
   },
   "homepage": "https://github.com/urinboy/zarrajs#readme",
-  "sideEffects": false
+  "sideEffects": false,
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "semantic-release": "^25.0.8"
+  }
 }

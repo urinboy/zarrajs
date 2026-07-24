@@ -30,11 +30,21 @@ Texnik topshiriq: `docs/Zarra_TZ.docx`. API dizayn qarorlari: `docs/spetsifikats
   zarur bo'lsa bo'sh qatordan so'ng 1-3 qatorli tushuntiruvchi tana.
 - Faqat local commit qil — `git push` hech qachon avtomatik bajarilmaydi, aniq so'ralmaguncha.
 
-## Versiyalash qoidasi (SemVer)
+## Versiyalash qoidasi (SemVer, avtomatik)
 
-- Versiya yagona manbasi: `src/zarra.js` dagi `VERSION` konstantasi. `package.json` shu
-  qiymatga moslab yangilanadi.
-- Format — `MAJOR.MINOR.PATCH`. v0.x davrida breaking change'larga ruxsat, lekin
-  `CHANGELOG.md`da (Keep a Changelog uslubida, o'zbekcha bo'limlar: Qo'shildi /
-  O'zgartirildi / Tuzatildi / Olib tashlandi) qayd etiladi.
-- Versiya oshirish alohida so'rovsiz qilinmaydi.
+- Versiya qo'lda emas, commit xabarlaridan **avtomatik** hisoblanadi
+  ([semantic-release](https://semantic-release.gitbook.io/), `master`ga push'da
+  GitHub Actions'da ishlaydi — `.github/workflows/release.yml`,
+  `.releaserc.json`). To'liq qoida: [CONTRIBUTING.md](./CONTRIBUTING.md).
+- Har bir commit [Conventional Commits](https://www.conventionalcommits.org/)
+  formatida yozilishi shart: `fix:` -> patch, `feat:` -> minor,
+  `feat!:`/`BREAKING CHANGE:` -> major, `docs:`/`chore:`/`refactor:`/`test:`/
+  `style:` -> versiya ko'tarilmaydi.
+- Versiya yagona manbasi baribir `src/zarra.js` dagi `VERSION` konstantasi —
+  CI'da `tools/versiya-sinxron.mjs` uni `package.json` bilan avtomatik
+  sinxronlaydi (qo'lda tahrirlanmaydi).
+- `CHANGELOG.md` (Keep a Changelog uslubida, o'zbekcha bo'limlar: Qo'shildi /
+  O'zgartirildi / Tuzatildi) release paytida avtomatik yangilanadi.
+- Qo'lda `npm version`/`npm publish` ishlatilmaydi — to'g'ri commit prefiksi va
+  `master`ga push yetarli. Push hali ham avtomatik emas — pastdagi "Commit
+  qilish qoidasi"ga ko'ra aniq so'ralmaguncha bajarilmaydi.
