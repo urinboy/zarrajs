@@ -238,6 +238,23 @@ test("computed: hisoblashda xato tashlansa, keyingi o'qishda qayta hisoblanadi",
   teng(hisobSoni, 2, "xato holatda natija keshlanmasligi, qayta urinish bo'lishi kerak");
 });
 
+test("effect: microtask paketida biri xato tashlasa, boshqalari baribir ishlaydi", async () => {
+  const a = signal(0);
+  const b = signal(0);
+  let bIshladi = 0;
+  effect(() => {
+    if (a() === 1) throw new Error('atayin');
+  });
+  effect(() => {
+    b();
+    bIshladi++;
+  });
+  a(1); // birinchi effect qayta ishlaganda xato tashlaydi
+  b(1); // xuddi shu batch'da b ham o'zgargan — u baribir yangilanishi kerak
+  await kut();
+  teng(bIshladi, 2, "bitta effect'ning xatosi bir xil batch'dagi boshqalarni to'xtatmasligi kerak");
+});
+
 test("effect: bitta signalni bir necha marta o'qisa ham, o'zgarishda faqat bir marta ishga tushadi", async () => {
   const a = signal(1);
   let ishlashSoni = 0;

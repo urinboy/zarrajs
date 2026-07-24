@@ -43,7 +43,15 @@ function rejalashtir(ef) {
       yuvishRejalangan = false;
       for (const e of [...navbat]) {
         navbat.delete(e);
-        if (!e.olik) e.ishga();
+        // bitta effect'ning xatosi shu paketdagi qolganlarini "yeb qo'ymasin":
+        // xato faqat shu effect'ni to'xtatadi, sikl davom etadi.
+        if (!e.olik) {
+          try {
+            e.ishga();
+          } catch (x) {
+            console.error(x);
+          }
+        }
       }
     });
   }
