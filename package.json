@@ -10,12 +10,25 @@
     ".": {
       "types": "./types/zarra.d.ts",
       "import": "./src/zarra.js"
+    },
+    "./xato-chegarasi": {
+      "types": "./types/xato-chegarasi.d.ts",
+      "import": "./qoshimchalar/xato-chegarasi.js"
+    },
+    "./tarix-router": {
+      "types": "./types/tarix-router.d.ts",
+      "import": "./qoshimchalar/tarix-router.js"
+    },
+    "./lazy": {
+      "types": "./types/lazy.d.ts",
+      "import": "./qoshimchalar/lazy.js"
     }
   },
   "unpkg": "dist/zarra.min.js",
   "jsdelivr": "dist/zarra.min.js",
   "files": [
     "src",
+    "qoshimchalar",
     "dist",
     "types",
     "README.md",
