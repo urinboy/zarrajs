@@ -380,6 +380,23 @@ await test("ro'yxat: bo'shab, qayta to'lganda tugunlar toza qayta yaratiladi", a
   teng(q.querySelector('li').textContent, 'uch');
 });
 
+await test("tarix-router: oddiy <a href> havola avtomatik ushlanadi (sahifa qayta yuklanmaydi)", async (q) => {
+  const { router: tarixRouter } = await import('../qoshimchalar/tarix-router.js');
+  const boshlangichYol = location.pathname;
+  history.pushState(null, '', boshlangichYol);
+  const ichkiYol = `${boshlangichYol}/ichki`;
+  const ochir = zarra(q, tarixRouter({
+    [boshlangichYol]: () => html`<a href="${ichkiYol}">bor</a>`,
+    [ichkiYol]: () => html`<h2>ichki sahifa</h2>`,
+  }));
+  q.querySelector('a').click();
+  await kut();
+  teng(q.querySelector('h2').textContent, 'ichki sahifa');
+  teng(location.pathname, ichkiYol, "click sahifani qayta yuklamasdan pathname'ni o'zgartirishi kerak");
+  ochir();
+  history.pushState(null, '', boshlangichYol);
+});
+
 /* ---------------- XULOSA ---------------- */
 
 const xulosa = document.getElementById('xulosa');
